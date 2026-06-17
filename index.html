@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Macro Checklist - Rastreador do Dólar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="estilo.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <h1>Macro Checklist</h1>
+      <p>Rastreador do Dólar baseado em ativos de risco, segurança e Minério de Ferro</p>
+    </header>
+
+    <div class="cards">
+      <!-- COLUNA ESQUERDA: Minério + Ativos -->
+      <div>
+        <section class="card">
+          <h2>Minério de Ferro (Sina I0)</h2>
+          <div class="row">
+            <span class="label">Último preço (manual):</span>
+            <span class="value" id="iron-price">--</span>
+          </div>
+          <div class="row">
+            <span class="label">Variação diária:</span>
+            <span class="value" id="iron-change">--</span>
+          </div>
+          <div class="row">
+            <span class="label">Classificação:</span>
+            <span class="value"><span id="iron-class" class="tag tag-neutral">--</span></span>
+          </div>
+
+          <div class="manual-block">
+            <p>Informe a variação do minério em % (ex.: 3.5 para 3,5%).</p>
+            <label class="input-row">
+              <span>Variação (%):</span>
+              <input type="number" step="0.01" id="iron-manual" placeholder="Ex: 3.5" />
+            </label>
+            <label class="input-row">
+              <span>Último preço:</span>
+              <input type="number" step="0.0001" id="iron-price-manual" placeholder="Opcional" />
+            </label>
+            <button id="btn-apply-iron">Aplicar minério</button>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Checklist dos Ativos (Investing)</h2>
+          <p class="hint">
+            Use sua carteira do Investing para preencher a variação (% do dia) de cada ativo.
+          </p>
+
+          <div class="table-ativos">
+            <table>
+              <thead>
+                <tr>
+                  <th>Código</th>
+                  <th>Tipo</th>
+                  <th>Var% (dia)</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="ativos-tbody">
+                <!-- preenchido via JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="manual-block">
+            <p>Atualize as variações pela linha abaixo:</p>
+            <div class="input-row">
+              <span>Código:</span>
+              <input type="text" id="ativo-codigo" placeholder="EWZ, DX, USD/MXN..." />
+            </div>
+            <div class="input-row">
+              <span>Variação (%):</span>
+              <input type="number" step="0.01" id="ativo-var" placeholder="Ex: 1.2" />
+            </div>
+            <button id="btn-apply-ativo">Aplicar variação</button>
+          </div>
+        </section>
+      </div>
+
+      <!-- COLUNA DIREITA: Score + Dólar + Notícias -->
+      <div>
+        <section class="card">
+          <h2>Resumo Risco x Segurança</h2>
+          <div class="row">
+            <span class="label">Risco em ALTA (pró dólar cair):</span>
+            <span class="value" id="risco-alta">--</span>
+          </div>
+          <div class="row">
+            <span class="label">Risco em QUEDA (pró dólar subir):</span>
+            <span class="value" id="risco-queda">--</span>
+          </div>
+          <div class="row">
+            <span class="label">Segurança em ALTA (pró dólar subir):</span>
+            <span class="value" id="segur-alta">--</span>
+          </div>
+          <div class="row">
+            <span class="label">Segurança em QUEDA (pró dólar cair):</span>
+            <span class="value" id="segur-queda">--</span>
+          </div>
+          <div class="row">
+            <span class="label">Ativos neutros:</span>
+            <span class="value" id="total-neutro">--</span>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Cenário Macro do Dólar</h2>
+          <div class="row">
+            <span class="label">Score macro:</span>
+            <span class="value" id="macro-score">--</span>
+          </div>
+          <div class="row">
+            <span class="label">Tendência do Dólar:</span>
+            <span class="value"><span id="usd-trend" class="tag tag-neutral">--</span></span>
+          </div>
+          <div class="row">
+            <span class="label">Recomendação:</span>
+            <span class="value" id="usd-action">--</span>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Filtro de Notícias</h2>
+          <p class="hint">
+            Igual ao checklist: operar depois de Payroll, IPC, PIB, PCE; não operar em feriado americano.
+          </p>
+          <div class="checkbox-group">
+            <label><input type="checkbox" id="chk-payroll" /> Payroll</label>
+            <label><input type="checkbox" id="chk-ipc" /> IPC</label>
+            <label><input type="checkbox" id="chk-pib" /> PIB EUA</label>
+            <label><input type="checkbox" id="chk-pce" /> PCE</label>
+            <label><input type="checkbox" id="chk-feriado" /> Feriado EUA</label>
+          </div>
+          <button id="btn-update-news">Aplicar filtro</button>
+          <p class="hint" id="news-hint">Operar normalmente.</p>
+        </section>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <p>Painel estático (HTML + CSS + JS). Você pode exportar depois para GitHub Pages.</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
