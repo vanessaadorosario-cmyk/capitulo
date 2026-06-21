@@ -11,6 +11,9 @@ const LIMITE_MINERIO_QUEDA = -0.03;
 const SCORE_ALTA = 5;
 const SCORE_BAIXA = -5;
 
+const STORAGE_KEY_SHEET_URL = "capitulo.googleSheetsCsvUrl";
+const SHEET_REFRESH_MS = 60000;
+
 // Lista de ativos que você usa no checklist
 let ativos = [
   // ---- RISCO ----
@@ -40,6 +43,237 @@ let ativos = [
   // Minério (via Sina)
   { codigo: "MINERIO_SINA", nome: "Minério de Ferro (Sina I0)",         tipo: "risco",     limiteAlta: LIMITE_MINERIO_ALTA, limiteQueda: LIMITE_MINERIO_QUEDA, variacao: 0 }
 ];
+
+function normalizarTexto(valor) {
+  return String(valor ?? "").trim().toLowerCase();
+}
+
+function parseNumeroFlexible(valor) {
+  if (valor == null) return null;
+  const texto = String(valor).trim().replace(/\s+/g, "").replace(/%/g, "").replace(",", ".");
+  if (!texto) return null;
+  const numero = parseFloat(texto);
+  return isNaN(numero) ? null : numero;
+}
+
+function detectarDelimitadorCSV(texto) {
+  const primeiraLinha = String(texto).split(/\r?\n/, 1)[0] || "";
+  const candidatos = [",", ";", "\t"];
+  let melhor = ",";
+  let melhorContagem = -1;
+
+  for (const candidato of candidatos) {
+    let contagem = 0;
+    let dentroAspas = false;
+    for (let i = 0; i < primeiraLinha.length; i++) {
+      const char = primeiraLinha[i];
+      if (char === '"') dentroAspas = !dentroAspas;
+      else if (!dentroAspas && char === candidato) contagem++;
+    }
+    if (contagem > melhorContagem) {
+      melhorContagem = contagem;
+      melhor = candidato;
+    }
+  }
+
+  return melhor;
+}
+
+function parseDelimitedText(texto, delimitador) {
+  const linhas = [];
+  let linha = [];
+  let campo = "";
+  let dentroAspas = false;
+
+  const pushCampo = () => {
+    linha.push(campo);
+    campo = "";
+  };
+
+  const pushLinha = () => {
+    pushCampo();
+    linhas.push(linha);
+    linha = [];
+  };
+
+  for (let i = 0; i < texto.length; i++) {
+    const char = texto[i];
+    const nextChar = texto[i + 1];
+
+    if (char === '"') {
+      if (dentroAspas && nextChar === '"') {
+        campo += '"';
+        i++;
+      } else {
+        dentroAspas = !dentroAspas;
+      }
+      continue;
+    }
+
+    if (!dentroAspas && char === delimitador) {
+      pushCampo();
+      continue;
+    }
+
+    if (!dentroAspas && char === "\n") {
+      pushLinha();
+      continue;
+    }
+
+    if (char !== "\r") campo += char;
+  }
+
+  if (campo.length > 0 || linha.length > 0) {
+    pushLinha();
+  }
+
+  return linhas.filter(row => row.some(value => String(value).trim() !== ""));
+}
+
+function csvParaObjetos(texto) {
+  const delimitador = detectarDelimitadorCSV(texto);
+  const linhas = parseDelimitedText(texto, delimitador);
+  if (linhas.length === 0) return [];
+
+  const cabecalhos = linhas[0].map(valor => normalizarTexto(valor));
+  const dados = [];
+
+  for (const linha of linhas.slice(1)) {
+    const objeto = {};
+    cabecalhos.forEach((cabecalho, indice) => {
+      objeto[cabecalho] = linha[indice] ?? "";
+    });
+    dados.push(objeto);
+  }
+
+  return dados;
+}
+
+function obterCampoLinha(objeto, nomes) {
+  for (const nome of nomes) {
+    if (Object.prototype.hasOwnProperty.call(objeto, nome) && String(objeto[nome]).trim() !== "") {
+      return objeto[nome];
+    }
+  }
+  return null;
+}
+
+function setSheetStatus(texto, tipo = "neutral") {
+  const el = document.getElementById("sheet-status");
+  if (!el) return;
+  el.textContent = texto;
+  el.classList.remove("tag-up", "tag-down", "tag-neutral");
+  if (tipo === "up") el.classList.add("tag-up");
+  else if (tipo === "down") el.classList.add("tag-down");
+  else el.classList.add("tag-neutral");
+}
+
+function getSheetUrl() {
+  const input = document.getElementById("sheet-url");
+  return input ? input.value.trim() : "";
+}
+
+function setSheetUrl(valor) {
+  const input = document.getElementById("sheet-url");
+  if (input) input.value = valor;
+}
+
+function salvarSheetUrl(valor) {
+  localStorage.setItem(STORAGE_KEY_SHEET_URL, valor);
+  const url = new URL(window.location.href);
+  if (valor) url.searchParams.set("sheet", valor);
+  else url.searchParams.delete("sheet");
+  window.history.replaceState({}, "", url.toString());
+}
+
+function carregarSheetUrlInicial() {
+  const url = new URL(window.location.href);
+  const urlDaQuery = url.searchParams.get("sheet");
+  const urlSalva = localStorage.getItem(STORAGE_KEY_SHEET_URL) || "";
+  const urlInicial = urlDaQuery || urlSalva;
+  if (urlInicial) setSheetUrl(urlInicial);
+  return urlInicial;
+}
+
+function atualizarAtivosComPlanilha(rows) {
+  let minerioVariacao = null;
+  let minerioPreco = null;
+  let alterados = 0;
+
+  for (const row of rows) {
+    const codigo = obterCampoLinha(row, ["codigo", "code", "ativo", "ticker"]);
+    if (!codigo) continue;
+
+    const ativo = ativos.find(item => normalizarTexto(item.codigo) === normalizarTexto(codigo));
+    if (!ativo) continue;
+
+    const variacaoBruta = obterCampoLinha(row, ["variacao", "variacao_pct", "var_pct", "var", "change_pct", "alteracao_pct"]);
+    const precoBruto = obterCampoLinha(row, ["preco", "preco_ultimo", "ultimo_preco", "price", "last_price"]);
+    const variacaoPct = parseNumeroFlexible(variacaoBruta);
+
+    if (variacaoPct != null) {
+      ativo.variacao = variacaoPct / 100;
+      alterados++;
+      if (ativo.codigo === "MINERIO_SINA") minerioVariacao = ativo.variacao;
+    }
+
+    const preco = parseNumeroFlexible(precoBruto);
+    if (ativo.codigo === "MINERIO_SINA" && preco != null) {
+      minerioPreco = preco;
+    }
+  }
+
+  if (minerioVariacao != null) {
+    atualizarPainelMinerio(minerioVariacao, minerioPreco);
+  } else {
+    atualizarPainel();
+  }
+
+  return alterados;
+}
+
+async function carregarDadosDaPlanilha() {
+  const url = getSheetUrl();
+  if (!url) {
+    setSheetStatus("Sem planilha carregada. Usando modo manual.", "neutral");
+    return;
+  }
+
+  setSheetStatus("Atualizando dados da planilha...", "neutral");
+
+  try {
+    const response = await fetch(url, { cache: "no-store" });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+    const texto = await response.text();
+    const rows = csvParaObjetos(texto);
+    const alterados = atualizarAtivosComPlanilha(rows);
+
+    setSheetStatus(
+      alterados > 0
+        ? `Planilha atualizada com ${alterados} linha(s).`
+        : "Planilha carregada, mas nenhum ativo foi encontrado.",
+      alterados > 0 ? "up" : "neutral"
+    );
+  } catch (error) {
+    console.error("Erro ao carregar planilha:", error);
+    setSheetStatus("Falha ao ler a planilha. Mantendo os dados locais.", "down");
+    atualizarPainel();
+  }
+}
+
+function iniciarAutoRefreshPlanilha() {
+  if (window.__sheetRefreshTimer) {
+    clearInterval(window.__sheetRefreshTimer);
+    window.__sheetRefreshTimer = null;
+  }
+
+  if (!getSheetUrl()) return;
+
+  window.__sheetRefreshTimer = setInterval(() => {
+    carregarDadosDaPlanilha();
+  }, SHEET_REFRESH_MS);
+}
 
 // ========= 2) CLASSIFICAÇÃO E SCORE =========
 
@@ -155,7 +389,11 @@ function renderTabelaAtivos() {
     tr.appendChild(tdVar);
 
     const tdStatus = document.createElement("td");
-    tdStatus.textContent = ativo.status || "NEUTRO";
+    const statusTag = document.createElement("span");
+    const status = ativo.status || "NEUTRO";
+    const tipoTag = status === "ALTA" ? "up" : status === "QUEDA" ? "down" : "neutral";
+    setTag(statusTag, status, tipoTag);
+    tdStatus.appendChild(statusTag);
     tr.appendChild(tdStatus);
 
     tbody.appendChild(tr);
@@ -193,8 +431,6 @@ function atualizarPainelMinerio(variacaoDecimal, precoUltimo) {
 
   if (precoUltimo != null && !isNaN(precoUltimo)) {
     priceEl.textContent = precoUltimo.toFixed(4);
-  } else {
-    priceEl.textContent = "--";
   }
 
   if (variacaoDecimal == null || isNaN(variacaoDecimal)) {
@@ -224,9 +460,51 @@ function atualizarPainelMinerio(variacaoDecimal, precoUltimo) {
 // ========= 4) EVENTOS =========
 
 document.addEventListener("DOMContentLoaded", () => {
+  const sheetUrlInicial = carregarSheetUrlInicial();
+
   document
     .getElementById("btn-update-news")
     .addEventListener("click", atualizarResumoNews);
+
+  document
+    .getElementById("btn-load-sheet")
+    .addEventListener("click", async () => {
+      const url = getSheetUrl();
+      if (!url) {
+        setSheetStatus("Cole a URL CSV publicada da planilha primeiro.", "down");
+        return;
+      }
+      salvarSheetUrl(url);
+      iniciarAutoRefreshPlanilha();
+      await carregarDadosDaPlanilha();
+    });
+
+  document
+    .getElementById("btn-save-sheet")
+    .addEventListener("click", () => {
+      const url = getSheetUrl();
+      if (!url) {
+        localStorage.removeItem(STORAGE_KEY_SHEET_URL);
+        history.replaceState({}, "", window.location.pathname);
+        setSheetStatus("URL removida. Voltando ao modo manual.", "neutral");
+        iniciarAutoRefreshPlanilha();
+        return;
+      }
+      salvarSheetUrl(url);
+      setSheetStatus("URL salva. Você pode compartilhar essa página com o parâmetro sheet.", "up");
+      iniciarAutoRefreshPlanilha();
+    });
+
+  document
+    .getElementById("btn-clear-sheet")
+    .addEventListener("click", () => {
+      setSheetUrl("");
+      localStorage.removeItem(STORAGE_KEY_SHEET_URL);
+      history.replaceState({}, "", window.location.pathname);
+      setSheetStatus("URL limpa. Modo manual ativo.", "neutral");
+      iniciarAutoRefreshPlanilha();
+      atualizarPainel();
+    });
 
   document
     .getElementById("btn-apply-iron")
@@ -269,4 +547,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   atualizarResumoNews();
   atualizarPainel();
+
+  if (sheetUrlInicial) {
+    iniciarAutoRefreshPlanilha();
+    carregarDadosDaPlanilha();
+  } else {
+    setSheetStatus("Sem planilha carregada. Usando modo manual.", "neutral");
+  }
 });

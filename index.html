@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Macro Checklist - Rastreador do Dólar</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="estilo.css" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="app">
@@ -121,6 +121,32 @@
           <div class="row">
             <span class="label">Recomendação:</span>
             <span class="value" id="usd-action">--</span>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Google Sheets + GitHub Pages</h2>
+          <p class="hint">
+            Publique sua planilha como CSV e cole a URL aqui para atualizar o painel automaticamente.
+          </p>
+          <div class="manual-block sheet-config">
+            <label class="input-row sheet-url-row">
+              <span>CSV da planilha:</span>
+              <input
+                type="url"
+                id="sheet-url"
+                placeholder="https://docs.google.com/spreadsheets/.../pub?output=csv"
+              />
+            </label>
+            <div class="sheet-actions">
+              <button id="btn-load-sheet" type="button">Carregar planilha</button>
+              <button id="btn-save-sheet" type="button">Salvar URL</button>
+              <button id="btn-clear-sheet" type="button">Limpar</button>
+            </div>
+            <p class="hint" id="sheet-status">Sem planilha carregada. Usando modo manual.</p>
+            <p class="hint">
+              Colunas aceitas: <strong>codigo</strong>, <strong>variacao_pct</strong> e <strong>preco</strong>.
+            </p>
           </div>
         </section>
 
