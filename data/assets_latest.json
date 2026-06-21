@@ -1,0 +1,492 @@
+{
+  "updated_at": "2026-06-21T23:12:53+00:00",
+  "source_priority": "investing_portfolio -> sina_hq -> yahoo_chart -> stooq",
+  "assets": [
+    {
+      "symbol": "DX",
+      "display_name": "Índice Dólar Futuros",
+      "group": "safety",
+      "line_memberships": [
+        "blue",
+        "green"
+      ],
+      "price": null,
+      "change_pct": null,
+      "status": "neutral",
+      "source_used": "unavailable",
+      "warning": "fetch failed: https://stooq.com/q/d/l/?s=dx.f&i=d (<urlopen error [Errno -5] No address associated with hostname>)"
+    },
+    {
+      "symbol": "VX",
+      "display_name": "S&P 500 VIX Futuros",
+      "group": "safety",
+      "line_memberships": [
+        "blue",
+        "green"
+      ],
+      "price": null,
+      "change_pct": null,
+      "status": "neutral",
+      "source_used": "unavailable",
+      "warning": "fetch failed: https://stooq.com/q/d/l/?s=vix&i=d (<urlopen error [Errno -5] No address associated with hostname>)"
+    },
+    {
+      "symbol": "USD/MXN",
+      "display_name": "USD/MXN",
+      "group": "safety",
+      "line_memberships": [
+        "blue"
+      ],
+      "price": null,
+      "change_pct": null,
+      "status": "neutral",
+      "source_used": "unavailable",
+      "warning": "fetch failed: https://stooq.com/q/d/l/?s=usdmxn&i=d (<urlopen error [Errno -5] No address associated with hostname>)"
+    },
+    {
+      "symbol": "USD/NOK",
+      "display_name": "USD/NOK",
+      "group": "safety",
+      "line_memberships": [
+        "blue",
+        "green"
+      ],
+      "price": null,
+      "change_pct": null,
+      "status": "neutral",
+      "source_used": "unavailable",
+      "warning": "fetch failed: https://stooq.com/q/d/l/?s=usdnok&i=d (<urlopen error [Errno -5] No address associated with hostname>)"
+    },
+    {
+      "symbol": "USD/NZD",
+      "display_name": "USD/NZD",
+      "group": "safety",
+      "line_memberships": [
+        "blue",
+        "green"
+      ],
+      "price": null,
+      "change_pct": null,
+      "status": "neutral",
+      "source_used": "unavailable",
+      "warning": "fetch failed: https://stooq.com/q/d/l/?s=usdnzd&i=d (<urlopen error [Errno -5] No address associated with hostname>)"
+    },
+    {
+      "symbol": "USD/AUD",
+      "display_name": "USD/AUD",
+      "group": "safety",
+      "line_memberships": [
+        "blue",
+        "green"
+      ],
+      "price": null,
+      "change_pct": null,
+      "status": "neutral",
+      "source_used": "unavailable",
+      "warning": "fetch failed: https://stooq.com/q/d/l/?s=usdaud&i=d (<urlopen error [Errno -5] No address associated with hostname>)"
+    },
+    {
+      "symbol": "USD/KRW",
+      "display_name": "USD/KRW",
+      "group": "safety",
+      "line_memberships": [
+        "blue",
+        "green"
+      ],
+      "price": null,
+      "change_pct": null,
+      "status": "neutral",
+      "source_used": "unavailable",
+      "warning": "fetch failed: https://stooq.com/q/d/l/?s=usdkrw&i=d (<urlopen error [Errno -5] No address associated with hostname>)"
+    },
+    {
+      "symbol": "USD/CNY",
+      "display_name": "USD/CNY",
+      "group": "safety",
+      "line_memberships": [
+        "blue",
+        "green"
+      ],
+      "price": null,
+      "change_pct": null,
+      "status": "neutral",
+      "source_used": "unavailable",
+      "warning": "fetch failed: https://stooq.com/q/d/l/?s=usdcny&i=d (<urlopen error [Errno -5] No address associated with hostname>)"
+    },
+    {
+      "symbol": "EUR/BRL",
+      "display_name": "EUR/BRL",
+      "group": "safety",
+      "line_memberships": [
+        "blue",
+        "green"
+      ],
+      "price": null,
+      "change_pct": null,
+      "status": "neutral",
+      "source_used": "unavailable",
+      "warning": "fetch failed: https://stooq.com/q/d/l/?s=eurbrl&i=d (<urlopen error [Errno -5] No address associated with hostname>)"
+    },
+    {
+      "symbol": "FGP",
+      "display_name": "Posição dos Estrangeiros 10k+ (placeholder)",
+      "group": "safety",
+      "line_memberships": [
+        "blue"
+      ],
+      "price": null,
+      "change_pct": null,
+      "status": "neutral",
+      "source_used": "manual_placeholder",
+      "warning": null
+    },
+    {
+      "symbol": "VOL_D1",
+      "display_name": "Volume D-1 (placeholder)",
+      "group": "safety",
+      "line_memberships": [
+        "blue"
+      ],
+      "price": null,
+      "change_pct": null,
+      "status": "neutral",
+      "source_used": "manual_placeholder",
+      "warning": null
+    },
+    {
+      "symbol": "GC",
+      "display_name": "Ouro Futuros",
+      "group": "risk",
+      "line_memberships": [
+        "red"
+      ],
+      "price": null,
+      "change_pct": null,
+      "status": "neutral",
+      "source_used": "unavailable",
+      "warning": "fetch failed: https://stooq.com/q/d/l/?s=gc.f&i=d (<urlopen error [Errno -5] No address associated with hostname>)"
+    },
+    {
+      "symbol": "HG",
+      "display_name": "Cobre Futuros",
+      "group": "risk",
+      "line_memberships": [
+        "red"
+      ],
+      "price": null,
+      "change_pct": null,
+      "status": "neutral",
+      "source_used": "unavailable",
+      "warning": "fetch failed: https://stooq.com/q/d/l/?s=hg.f&i=d (<urlopen error [Errno -5] No address associated with hostname>)"
+    },
+    {
+      "symbol": "CL",
+      "display_name": "Petróleo WTI Futuros",
+      "group": "risk",
+      "line_memberships": [
+        "red"
+      ],
+      "price": null,
+      "change_pct": null,
+      "status": "neutral",
+      "source_used": "unavailable",
+      "warning": "fetch failed: https://stooq.com/q/d/l/?s=cl.f&i=d (<urlopen error [Errno -5] No address associated with hostname>)"
+    },
+    {
+      "symbol": ".OSEAX",
+      "display_name": "Oslo All Share",
+      "group": "risk",
+      "line_memberships": [
+        "red"
+      ],
+      "price": null,
+      "change_pct": null,
+      "status": "neutral",
+      "source_used": "unavailable",
+      "warning": "fetch failed: https://stooq.com/q/d/l/?s=oseax.ol&i=d (<urlopen error [Errno -5] No address associated with hostname>)"
+    },
+    {
+      "symbol": "ZS",
+      "display_name": "Soja Chicago Futuros",
+      "group": "risk",
+      "line_memberships": [
+        "red"
+      ],
+      "price": null,
+      "change_pct": null,
+      "status": "neutral",
+      "source_used": "unavailable",
+      "warning": "fetch failed: https://stooq.com/q/d/l/?s=zs.f&i=d (<urlopen error [Errno -5] No address associated with hostname>)"
+    },
+    {
+      "symbol": "YM",
+      "display_name": "Dow Jones Futuros",
+      "group": "risk",
+      "line_memberships": [
+        "red"
+      ],
+      "price": null,
+      "change_pct": null,
+      "status": "neutral",
+      "source_used": "unavailable",
+      "warning": "fetch failed: https://stooq.com/q/d/l/?s=ym.f&i=d (<urlopen error [Errno -5] No address associated with hostname>)"
+    },
+    {
+      "symbol": ".GDOW",
+      "display_name": "The Global Dow USD",
+      "group": "risk",
+      "line_memberships": [
+        "red"
+      ],
+      "price": null,
+      "change_pct": null,
+      "status": "neutral",
+      "source_used": "unavailable",
+      "warning": "fetch failed: https://stooq.com/q/d/l/?s=dji&i=d (<urlopen error [Errno -5] No address associated with hostname>)"
+    },
+    {
+      "symbol": "VALE.K",
+      "display_name": "Vale SA ADR",
+      "group": "risk",
+      "line_memberships": [
+        "red",
+        "green"
+      ],
+      "price": null,
+      "change_pct": null,
+      "status": "neutral",
+      "source_used": "unavailable",
+      "warning": "fetch failed: https://stooq.com/q/d/l/?s=vale.us&i=d (<urlopen error [Errno -5] No address associated with hostname>)"
+    },
+    {
+      "symbol": "PBR",
+      "display_name": "Petrobras SA ADR",
+      "group": "risk",
+      "line_memberships": [
+        "red",
+        "green"
+      ],
+      "price": null,
+      "change_pct": null,
+      "status": "neutral",
+      "source_used": "unavailable",
+      "warning": "fetch failed: https://stooq.com/q/d/l/?s=pbr.us&i=d (<urlopen error [Errno -5] No address associated with hostname>)"
+    },
+    {
+      "symbol": "EWZ",
+      "display_name": "iShares MSCI Brazil ETF",
+      "group": "risk",
+      "line_memberships": [
+        "red",
+        "green"
+      ],
+      "price": null,
+      "change_pct": null,
+      "status": "neutral",
+      "source_used": "unavailable",
+      "warning": "fetch failed: https://stooq.com/q/d/l/?s=ewz.us&i=d (<urlopen error [Errno -5] No address associated with hostname>)"
+    },
+    {
+      "symbol": "XLF",
+      "display_name": "Financial Select Sector SPDR",
+      "group": "risk",
+      "line_memberships": [
+        "red",
+        "green"
+      ],
+      "price": null,
+      "change_pct": null,
+      "status": "neutral",
+      "source_used": "unavailable",
+      "warning": "fetch failed: https://stooq.com/q/d/l/?s=xlf.us&i=d (<urlopen error [Errno -5] No address associated with hostname>)"
+    },
+    {
+      "symbol": "XLP",
+      "display_name": "Consumer Staples Select Sector SPDR",
+      "group": "risk",
+      "line_memberships": [
+        "red",
+        "green"
+      ],
+      "price": null,
+      "change_pct": null,
+      "status": "neutral",
+      "source_used": "unavailable",
+      "warning": "fetch failed: https://stooq.com/q/d/l/?s=xlp.us&i=d (<urlopen error [Errno -5] No address associated with hostname>)"
+    },
+    {
+      "symbol": "XLE",
+      "display_name": "Energy Select Sector SPDR",
+      "group": "risk",
+      "line_memberships": [
+        "red",
+        "green"
+      ],
+      "price": null,
+      "change_pct": null,
+      "status": "neutral",
+      "source_used": "unavailable",
+      "warning": "fetch failed: https://stooq.com/q/d/l/?s=xle.us&i=d (<urlopen error [Errno -5] No address associated with hostname>)"
+    },
+    {
+      "symbol": "XME",
+      "display_name": "SPDR S&P Metals and Mining ETF",
+      "group": "risk",
+      "line_memberships": [
+        "red",
+        "green"
+      ],
+      "price": null,
+      "change_pct": null,
+      "status": "neutral",
+      "source_used": "unavailable",
+      "warning": "fetch failed: https://stooq.com/q/d/l/?s=xme.us&i=d (<urlopen error [Errno -5] No address associated with hostname>)"
+    },
+    {
+      "symbol": "EEM",
+      "display_name": "iShares MSCI Emerging Markets ETF",
+      "group": "risk",
+      "line_memberships": [
+        "red",
+        "green"
+      ],
+      "price": null,
+      "change_pct": null,
+      "status": "neutral",
+      "source_used": "unavailable",
+      "warning": "fetch failed: https://stooq.com/q/d/l/?s=eem.us&i=d (<urlopen error [Errno -5] No address associated with hostname>)"
+    },
+    {
+      "symbol": "SOXX.O",
+      "display_name": "iShares Semiconductor ETF",
+      "group": "risk",
+      "line_memberships": [
+        "red",
+        "green"
+      ],
+      "price": null,
+      "change_pct": null,
+      "status": "neutral",
+      "source_used": "unavailable",
+      "warning": "fetch failed: https://stooq.com/q/d/l/?s=soxx.us&i=d (<urlopen error [Errno -5] No address associated with hostname>)"
+    },
+    {
+      "symbol": ".BSESN",
+      "display_name": "BSE Sensex 30",
+      "group": "risk",
+      "line_memberships": [
+        "red",
+        "green"
+      ],
+      "price": null,
+      "change_pct": null,
+      "status": "neutral",
+      "source_used": "unavailable",
+      "warning": "fetch failed: https://stooq.com/q/d/l/?s=sensex&i=d (<urlopen error [Errno -5] No address associated with hostname>)"
+    },
+    {
+      "symbol": ".SSEC",
+      "display_name": "Shanghai Composite",
+      "group": "reference",
+      "line_memberships": [
+        "green"
+      ],
+      "price": null,
+      "change_pct": null,
+      "status": "neutral",
+      "source_used": "unavailable",
+      "warning": "fetch failed: https://stooq.com/q/d/l/?s=shc&i=d (<urlopen error [Errno -5] No address associated with hostname>)"
+    },
+    {
+      "symbol": ".SZI",
+      "display_name": "SZSE Component",
+      "group": "reference",
+      "line_memberships": [
+        "green"
+      ],
+      "price": null,
+      "change_pct": null,
+      "status": "neutral",
+      "source_used": "unavailable",
+      "warning": "fetch failed: https://stooq.com/q/d/l/?s=szse&i=d (<urlopen error [Errno -5] No address associated with hostname>)"
+    },
+    {
+      "symbol": "HSI_FUT",
+      "display_name": "Hang Seng Futuros",
+      "group": "reference",
+      "line_memberships": [
+        "green"
+      ],
+      "price": null,
+      "change_pct": null,
+      "status": "neutral",
+      "source_used": "unavailable",
+      "warning": "fetch failed: https://stooq.com/q/d/l/?s=hsi&i=d (<urlopen error [Errno -5] No address associated with hostname>)"
+    },
+    {
+      "symbol": "A50_FUT",
+      "display_name": "China A50 Futuros",
+      "group": "reference",
+      "line_memberships": [
+        "green"
+      ],
+      "price": null,
+      "change_pct": null,
+      "status": "neutral",
+      "source_used": "unavailable",
+      "warning": "fetch failed: https://stooq.com/q/d/l/?s=cn50&i=d (<urlopen error [Errno -5] No address associated with hostname>)"
+    },
+    {
+      "symbol": ".DJSH",
+      "display_name": "Dow Jones Shanghai",
+      "group": "reference",
+      "line_memberships": [
+        "green"
+      ],
+      "price": null,
+      "change_pct": null,
+      "status": "neutral",
+      "source_used": "unavailable",
+      "warning": "fetch failed: https://stooq.com/q/d/l/?s=djsh&i=d (<urlopen error [Errno -5] No address associated with hostname>)"
+    },
+    {
+      "symbol": "MINERIO_SINA",
+      "display_name": "Minério de Ferro (Sina I0)",
+      "group": "risk",
+      "line_memberships": [
+        "red",
+        "green"
+      ],
+      "price": null,
+      "change_pct": null,
+      "status": "neutral",
+      "source_used": "unavailable",
+      "warning": "fetch failed: https://stooq.com/q/d/l/?s=tio.f&i=d (<urlopen error [Errno -5] No address associated with hostname>)"
+    }
+  ],
+  "aggregates": {
+    "line_values": {
+      "blue": 0,
+      "red": 0,
+      "green": 0,
+      "gray": 34
+    },
+    "line_status_counts": {
+      "blue": {
+        "up": 0,
+        "down": 0,
+        "neutral": 11
+      },
+      "red": {
+        "up": 0,
+        "down": 0,
+        "neutral": 18
+      },
+      "green": {
+        "up": 0,
+        "down": 0,
+        "neutral": 24
+      }
+    }
+  }
+}
