@@ -13,6 +13,7 @@ const SCORE_BAIXA = -5;
 
 const STORAGE_KEY_SHEET_URL = "capitulo.googleSheetsCsvUrl";
 const SHEET_REFRESH_MS = 300000;
+const AUTO_DATA_URL = "data/quotes.json";
 const MARKET_HISTORY_KEY = "capitulo.marketHistory";
 const MARKET_HISTORY_MAX = 72;
 
@@ -514,6 +515,78 @@ function iniciarAutoRefreshPlanilha() {
   }, SHEET_REFRESH_MS);
 }
 
+function pararAutoRefreshAutomatico() {
+  if (!window.__autoRefreshTimer) return;
+  clearInterval(window.__autoRefreshTimer);
+  window.__autoRefreshTimer = null;
+}
+
+function aplicarDadosAutomaticos(payload) {
+  const variacoes = payload && typeof payload === "object" ? payload.variacoes || {} : {};
+  const precos = payload && typeof payload === "object" ? payload.precos || {} : {};
+
+  let alterados = 0;
+  let minerioVariacao = null;
+  let minerioPreco = null;
+
+  for (const ativo of ativos) {
+    const variacaoBruta = variacoes[ativo.codigo];
+    const variacaoPct = parseNumeroFlexible(variacaoBruta);
+    if (variacaoPct != null) {
+      ativo.variacao = variacaoPct / 100;
+      alterados++;
+      if (ativo.codigo === "MINERIO_SINA") minerioVariacao = ativo.variacao;
+    }
+
+    if (ativo.codigo === "MINERIO_SINA") {
+      const precoBruto = precos[ativo.codigo];
+      const preco = parseNumeroFlexible(precoBruto);
+      if (preco != null) minerioPreco = preco;
+    }
+  }
+
+  if (minerioVariacao != null) {
+    atualizarPainelMinerio(minerioVariacao, minerioPreco, { origem: "auto" });
+  } else {
+    atualizarPainel({ origem: "auto" });
+  }
+
+  return alterados;
+}
+
+async function carregarDadosAutomaticos() {
+  setSheetStatus("Atualizando mercado automático...", "neutral");
+
+  try {
+    const response = await fetch(`${AUTO_DATA_URL}?t=${Date.now()}`, { cache: "no-store" });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+    const dados = await response.json();
+    const alterados = aplicarDadosAutomaticos(dados);
+    const atualizadoEm = dados && dados.updated_at
+      ? new Date(dados.updated_at).toLocaleString("pt-BR")
+      : "agora";
+
+    setSheetStatus(
+      alterados > 0
+        ? `Modo automático ativo: ${alterados} ativo(s) atualizados (${atualizadoEm}).`
+        : "Modo automático ativo, aguardando dados válidos.",
+      alterados > 0 ? "up" : "neutral"
+    );
+  } catch (error) {
+    console.error("Erro ao carregar dados automáticos:", error);
+    setSheetStatus("Falha no modo automático. Tentando novamente no próximo ciclo.", "down");
+    atualizarPainel({ origem: "auto" });
+  }
+}
+
+function iniciarAutoRefreshAutomatico() {
+  pararAutoRefreshAutomatico();
+  window.__autoRefreshTimer = setInterval(() => {
+    if (!getSheetUrl()) carregarDadosAutomaticos();
+  }, SHEET_REFRESH_MS);
+}
+
 // ========= 2) CLASSIFICAÇÃO E SCORE =========
 
 function classificarAtivo(variacao, limiteAlta, limiteQueda) {
@@ -729,6 +802,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
       salvarSheetUrl(url);
+      pararAutoRefreshAutomatico();
       iniciarAutoRefreshPlanilha();
       await carregarDadosDaPlanilha();
     });
@@ -742,10 +816,13 @@ document.addEventListener("DOMContentLoaded", () => {
         history.replaceState({}, "", window.location.pathname);
         setSheetStatus("URL removida. Voltando ao modo manual.", "neutral");
         iniciarAutoRefreshPlanilha();
+        iniciarAutoRefreshAutomatico();
+        carregarDadosAutomaticos();
         return;
       }
       salvarSheetUrl(url);
       setSheetStatus("URL salva. Você pode compartilhar essa página com o parâmetro sheet.", "up");
+      pararAutoRefreshAutomatico();
       iniciarAutoRefreshPlanilha();
     });
 
@@ -755,9 +832,10 @@ document.addEventListener("DOMContentLoaded", () => {
       setSheetUrl("");
       localStorage.removeItem(STORAGE_KEY_SHEET_URL);
       history.replaceState({}, "", window.location.pathname);
-      setSheetStatus("URL limpa. Modo manual ativo.", "neutral");
+      setSheetStatus("URL limpa. Voltando para modo automático.", "neutral");
       iniciarAutoRefreshPlanilha();
-      atualizarPainel();
+      iniciarAutoRefreshAutomatico();
+      carregarDadosAutomaticos();
     });
 
   document
@@ -809,9 +887,11 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   if (sheetUrlInicial) {
+    pararAutoRefreshAutomatico();
     iniciarAutoRefreshPlanilha();
     carregarDadosDaPlanilha();
   } else {
-    setSheetStatus("Sem planilha carregada. Usando modo manual.", "neutral");
+    iniciarAutoRefreshAutomatico();
+    carregarDadosAutomaticos();
   }
 });
