@@ -12,7 +12,9 @@ const SCORE_ALTA = 5;
 const SCORE_BAIXA = -5;
 
 const STORAGE_KEY_SHEET_URL = "capitulo.googleSheetsCsvUrl";
-const SHEET_REFRESH_MS = 60000;
+const SHEET_REFRESH_MS = 300000;
+const MARKET_HISTORY_KEY = "capitulo.marketHistory";
+const MARKET_HISTORY_MAX = 72;
 
 // Lista de ativos que você usa no checklist
 let ativos = [
@@ -195,6 +197,231 @@ function carregarSheetUrlInicial() {
   return urlInicial;
 }
 
+function formatarHorario(timestamp) {
+  return new Date(timestamp).toLocaleTimeString("pt-BR", {
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
+function carregarHistoricoMercado() {
+  try {
+    const bruto = localStorage.getItem(MARKET_HISTORY_KEY);
+    const dados = bruto ? JSON.parse(bruto) : [];
+    return Array.isArray(dados) ? dados : [];
+  } catch {
+    return [];
+  }
+}
+
+function salvarHistoricoMercado(history) {
+  localStorage.setItem(MARKET_HISTORY_KEY, JSON.stringify(history));
+}
+
+function calcularLeituraMercado(stats) {
+  const otimismo = stats.riscoAlta + stats.segurQueda;
+  const pessimismo = stats.riscoQueda + stats.segurAlta;
+  const neutro = stats.neutros;
+  const acumulado = stats.score;
+  const direcao = otimismo > pessimismo ? "OTIMISMO" : pessimismo > otimismo ? "PESSIMISMO" : "NEUTRO";
+
+  return { otimismo, pessimismo, neutro, acumulado, direcao };
+}
+
+function registrarSnapshotMercado(stats, origem = "manual") {
+  const leitura = calcularLeituraMercado(stats);
+  const history = carregarHistoricoMercado();
+  const snapshot = {
+    ts: Date.now(),
+    origem,
+    ...leitura
+  };
+
+  const last = history[history.length - 1];
+  const sameBucket = last && Math.floor(last.ts / SHEET_REFRESH_MS) === Math.floor(snapshot.ts / SHEET_REFRESH_MS);
+  const sameValues =
+    last &&
+    last.otimismo === snapshot.otimismo &&
+    last.pessimismo === snapshot.pessimismo &&
+    last.neutro === snapshot.neutro &&
+    last.acumulado === snapshot.acumulado &&
+    last.direcao === snapshot.direcao;
+
+  if (last && sameBucket && sameValues) {
+    history[history.length - 1] = snapshot;
+  } else {
+    history.push(snapshot);
+  }
+
+  while (history.length > MARKET_HISTORY_MAX) history.shift();
+  salvarHistoricoMercado(history);
+  return snapshot;
+}
+
+function determinarViradaMercado(history, snapshot) {
+  const previous = history[history.length - 2] || history[history.length - 1];
+  if (!previous) {
+    return "Primeira leitura do mercado.";
+  }
+
+  if (snapshot.direcao !== previous.direcao && snapshot.direcao !== "NEUTRO" && previous.direcao !== "NEUTRO") {
+    return `Virada: ${previous.direcao} → ${snapshot.direcao}`;
+  }
+
+  if (snapshot.direcao === "NEUTRO") {
+    return "Mercado em indecisão; as linhas ainda não definiram direção.";
+  }
+
+  return snapshot.direcao === "OTIMISMO"
+    ? "Otimismo confirmado: dólar cai e risco sobe."
+    : "Pessimismo confirmado: dólar sobe e risco cai.";
+}
+
+function prepararCanvas(canvas) {
+  const rect = canvas.getBoundingClientRect();
+  const width = Math.max(300, Math.floor(rect.width || canvas.clientWidth || 300));
+  const height = Math.max(260, Math.floor(rect.height || canvas.clientHeight || 300));
+  const dpr = window.devicePixelRatio || 1;
+
+  canvas.width = Math.floor(width * dpr);
+  canvas.height = Math.floor(height * dpr);
+
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, width, height };
+}
+
+function renderDirecionalMercado(history, snapshot) {
+  const canvas = document.getElementById("market-chart");
+  if (!canvas) return;
+
+  const { ctx, width, height } = prepararCanvas(canvas);
+  const points = history.length ? history : snapshot ? [snapshot] : [];
+  ctx.clearRect(0, 0, width, height);
+  ctx.fillStyle = "#020617";
+  ctx.fillRect(0, 0, width, height);
+
+  if (!points.length) return;
+
+  const padding = { top: 18, right: 18, bottom: 34, left: 48 };
+  const plot = {
+    x: padding.left,
+    y: padding.top,
+    w: width - padding.left - padding.right,
+    h: height - padding.top - padding.bottom
+  };
+
+  const minValue = Math.min(0, ...points.flatMap(p => [p.otimismo, p.pessimismo, p.neutro, p.acumulado]));
+  const maxValue = Math.max(6, ...points.flatMap(p => [p.otimismo, p.pessimismo, p.neutro, p.acumulado]));
+  const range = Math.max(1, maxValue - minValue);
+  const scaleY = value => plot.y + plot.h - ((value - minValue) / range) * plot.h;
+  const scaleX = index =>
+    points.length === 1
+      ? plot.x + plot.w / 2
+      : plot.x + (index / (points.length - 1)) * plot.w;
+
+  ctx.font = "11px system-ui, sans-serif";
+  ctx.fillStyle = "rgba(229, 231, 235, 0.8)";
+  ctx.strokeStyle = "rgba(148, 163, 184, 0.12)";
+  ctx.lineWidth = 1;
+
+  const gridSteps = 5;
+  for (let i = 0; i <= gridSteps; i++) {
+    const value = minValue + (range / gridSteps) * i;
+    const y = scaleY(value);
+    ctx.beginPath();
+    ctx.moveTo(plot.x, y);
+    ctx.lineTo(plot.x + plot.w, y);
+    ctx.stroke();
+    ctx.fillText(Math.round(value).toString(), 10, y + 3);
+  }
+
+  if (minValue < 0 && maxValue > 0) {
+    const zeroY = scaleY(0);
+    ctx.strokeStyle = "rgba(148, 163, 184, 0.28)";
+    ctx.setLineDash([6, 6]);
+    ctx.beginPath();
+    ctx.moveTo(plot.x, zeroY);
+    ctx.lineTo(plot.x + plot.w, zeroY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  const series = [
+    { key: "otimismo", color: "#22c55e", width: 3, dash: [] },
+    { key: "pessimismo", color: "#ef4444", width: 3, dash: [] },
+    { key: "neutro", color: "#a1a1aa", width: 2.5, dash: [8, 7] },
+    { key: "acumulado", color: "#22d3ee", width: 3, dash: [2, 5] }
+  ];
+
+  for (const serie of series) {
+    ctx.strokeStyle = serie.color;
+    ctx.lineWidth = serie.width;
+    ctx.setLineDash(serie.dash);
+    ctx.beginPath();
+
+    points.forEach((point, index) => {
+      const x = scaleX(index);
+      const y = scaleY(point[serie.key]);
+      if (index === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    points.forEach((point, index) => {
+      const x = scaleX(index);
+      const y = scaleY(point[serie.key]);
+      if (index === points.length - 1) {
+        ctx.fillStyle = serie.color;
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    });
+  }
+
+  const tickEvery = Math.max(1, Math.floor(points.length / 6));
+  ctx.fillStyle = "rgba(229, 231, 235, 0.7)";
+  points.forEach((point, index) => {
+    if (index % tickEvery !== 0 && index !== points.length - 1) return;
+    const x = scaleX(index);
+    ctx.save();
+    ctx.translate(x, height - 10);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText(formatarHorario(point.ts), 0, 0);
+    ctx.restore();
+  });
+}
+
+function atualizarDirecionalMercado(stats, origem = "manual") {
+  const snapshot = registrarSnapshotMercado(stats, origem);
+  const history = carregarHistoricoMercado();
+  const historyForChart = history.length ? history : [snapshot];
+  renderDirecionalMercado(historyForChart, snapshot);
+
+  const directionEl = document.getElementById("market-direction");
+  const crossEl = document.getElementById("market-cross");
+  const updatedEl = document.getElementById("market-updated");
+  const noteEl = document.getElementById("market-note");
+
+  if (directionEl) {
+    const tipo = snapshot.direcao === "OTIMISMO" ? "up" : snapshot.direcao === "PESSIMISMO" ? "down" : "neutral";
+    setTag(directionEl, snapshot.direcao, tipo);
+  }
+
+  if (crossEl) crossEl.textContent = determinarViradaMercado(historyForChart, snapshot);
+  if (updatedEl) updatedEl.textContent = `Atualizado às ${formatarHorario(snapshot.ts)}`;
+  if (noteEl) {
+    noteEl.textContent = snapshot.direcao === "NEUTRO"
+      ? "Neutros acima das linhas: mercado ainda indeciso."
+      : snapshot.direcao === "OTIMISMO"
+        ? "Linha verde dominante para baixo: dólar perde força e o índice tende a subir."
+        : "Linha vermelha dominante para cima: dólar ganha força e o risco perde tração.";
+  }
+}
+
 function atualizarAtivosComPlanilha(rows) {
   let minerioVariacao = null;
   let minerioPreco = null;
@@ -224,9 +451,9 @@ function atualizarAtivosComPlanilha(rows) {
   }
 
   if (minerioVariacao != null) {
-    atualizarPainelMinerio(minerioVariacao, minerioPreco);
+    atualizarPainelMinerio(minerioVariacao, minerioPreco, { origem: "sheet" });
   } else {
-    atualizarPainel();
+    atualizarPainel({ origem: "sheet" });
   }
 
   return alterados;
@@ -258,7 +485,7 @@ async function carregarDadosDaPlanilha() {
   } catch (error) {
     console.error("Erro ao carregar planilha:", error);
     setSheetStatus("Falha ao ler a planilha. Mantendo os dados locais.", "down");
-    atualizarPainel();
+    atualizarPainel({ origem: "sheet" });
   }
 }
 
@@ -378,6 +605,10 @@ function renderTabelaAtivos() {
     tdCod.textContent = ativo.codigo;
     tr.appendChild(tdCod);
 
+    const tdNome = document.createElement("td");
+    tdNome.textContent = ativo.nome;
+    tr.appendChild(tdNome);
+
     const tdTipo = document.createElement("td");
     tdTipo.textContent = ativo.tipo === "risco" ? "Risco" : "Segurança";
     tdTipo.className = ativo.tipo === "risco" ? "tipo-risco" : "tipo-seguranca";
@@ -400,7 +631,9 @@ function renderTabelaAtivos() {
   }
 }
 
-function atualizarPainel() {
+function atualizarPainel(opcoes = {}) {
+  const registrarHistorico = opcoes.registrarHistorico !== false;
+  const origem = opcoes.origem || "manual";
   const { riscoAlta, riscoQueda, segurAlta, segurQueda, neutros, score } =
     calcularScoreEDistribuicao();
 
@@ -422,9 +655,18 @@ function atualizarPainel() {
   usdActionEl.textContent = acao;
 
   renderTabelaAtivos();
+  if (registrarHistorico) {
+    atualizarDirecionalMercado({ riscoAlta, riscoQueda, segurAlta, segurQueda, neutros, score }, origem);
+  } else {
+    const history = carregarHistoricoMercado();
+    const fallbackSnapshot = { ts: Date.now(), ...calcularLeituraMercado({ riscoAlta, riscoQueda, segurAlta, segurQueda, neutros, score }) };
+    renderDirecionalMercado(history.length ? history : [fallbackSnapshot], fallbackSnapshot);
+  }
+
+  return { riscoAlta, riscoQueda, segurAlta, segurQueda, neutros, score };
 }
 
-function atualizarPainelMinerio(variacaoDecimal, precoUltimo) {
+function atualizarPainelMinerio(variacaoDecimal, precoUltimo, opcoes = {}) {
   const priceEl = document.getElementById("iron-price");
   const chgEl = document.getElementById("iron-change");
   const classEl = document.getElementById("iron-class");
@@ -454,7 +696,7 @@ function atualizarPainelMinerio(variacaoDecimal, precoUltimo) {
   else if (status === "QUEDA") setTag(classEl, "QUEDA", "down");
   else setTag(classEl, "NEUTRO", "neutral");
 
-  atualizarPainel();
+  atualizarPainel(opcoes);
 }
 
 // ========= 4) EVENTOS =========
@@ -519,7 +761,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
       const variacaoDecimal = variacaoPct / 100.0;
-      atualizarPainelMinerio(variacaoDecimal, isNaN(preco) ? null : preco);
+      atualizarPainelMinerio(variacaoDecimal, isNaN(preco) ? null : preco, { origem: "manual" });
     });
 
   document
@@ -542,16 +784,30 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
       ativo.variacao = pct / 100.0;
-      atualizarPainel();
+      atualizarPainel({ origem: "manual" });
     });
 
   atualizarResumoNews();
-  atualizarPainel();
+  atualizarPainel({ origem: "init" });
+
+  window.addEventListener("resize", () => {
+    const history = carregarHistoricoMercado();
+    const ultimo = history[history.length - 1];
+    if (ultimo) renderDirecionalMercado(history, ultimo);
+  });
 
   if (sheetUrlInicial) {
     iniciarAutoRefreshPlanilha();
     carregarDadosDaPlanilha();
   } else {
     setSheetStatus("Sem planilha carregada. Usando modo manual.", "neutral");
+  }
+
+  if (!window.__marketRefreshTimer) {
+    window.__marketRefreshTimer = setInterval(() => {
+      if (getSheetUrl()) {
+        carregarDadosDaPlanilha();
+      }
+    }, SHEET_REFRESH_MS);
   }
 });

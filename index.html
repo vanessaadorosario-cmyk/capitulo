@@ -56,6 +56,7 @@
               <thead>
                 <tr>
                   <th>Código</th>
+                  <th>Nome</th>
                   <th>Tipo</th>
                   <th>Var% (dia)</th>
                   <th>Status</th>
@@ -121,6 +122,40 @@
           <div class="row">
             <span class="label">Recomendação:</span>
             <span class="value" id="usd-action">--</span>
+          </div>
+        </section>
+
+        <section class="card market-card">
+          <h2>Direcional do Mercado</h2>
+          <p class="hint">
+            Linha verde = otimismo, dólar cai e índice sobe. Linha vermelha = pessimismo, dólar sobe e índice cai.
+            Linha cinza = neutro. Linha azul = acumulado direcional.
+          </p>
+          <div class="market-summary">
+            <div>
+              <span class="label">Leitura atual</span>
+              <span class="value"><span id="market-direction" class="tag tag-neutral">NEUTRO</span></span>
+            </div>
+            <div>
+              <span class="label">Cruzamento</span>
+              <span class="value" id="market-cross">Aguardando dados</span>
+            </div>
+            <div>
+              <span class="label">Atualização</span>
+              <span class="value" id="market-updated">--</span>
+            </div>
+          </div>
+          <div class="market-chart-wrap">
+            <canvas id="market-chart"></canvas>
+          </div>
+          <p class="hint" id="market-note">
+            Neutros acima das linhas: mercado ainda indeciso.
+          </p>
+          <div class="market-legend">
+            <span><i class="swatch swatch-green"></i> Otimismo</span>
+            <span><i class="swatch swatch-red"></i> Pessimismo</span>
+            <span><i class="swatch swatch-gray"></i> Neutro</span>
+            <span><i class="swatch swatch-cyan"></i> Acumulado</span>
           </div>
         </section>
 
