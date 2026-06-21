@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Capítulo • Market Assets Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #0b1220; color: #e6edf3; margin: 0; }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 20px; }
+    .card { background: #111a2d; border: 1px solid #24304a; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+    .meta { display: flex; gap: 20px; flex-wrap: wrap; }
+    .tag { padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+    .up { background: #14532d; color: #86efac; }
+    .down { background: #7f1d1d; color: #fca5a5; }
+    .neutral { background: #374151; color: #e5e7eb; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { border-bottom: 1px solid #24304a; padding: 8px; text-align: left; }
+    th { position: sticky; top: 0; background: #111a2d; }
+    .table-wrap { max-height: 440px; overflow: auto; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Dashboard de Ativos (5 min)</h1>
+    <div class="card meta">
+      <div><strong>Atualizado em UTC:</strong> <span id="updated-at">--</span></div>
+      <div><strong>Linha Azul:</strong> <span id="line-blue">--</span></div>
+      <div><strong>Linha Vermelha:</strong> <span id="line-red">--</span></div>
+      <div><strong>Linha Verde:</strong> <span id="line-green">--</span></div>
+      <div><strong>Linha Cinza:</strong> <span id="line-gray">--</span></div>
+    </div>
+
+    <div class="card">
+      <canvas id="line-chart" height="120"></canvas>
+    </div>
+
+    <div class="card table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Symbol</th>
+            <th>Asset</th>
+            <th>Group</th>
+            <th>Price</th>
+            <th>Change %</th>
+            <th>Status</th>
+            <th>Source</th>
+          </tr>
+        </thead>
+        <tbody id="assets-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const fmt = (n, d = 4) => (typeof n === "number" && Number.isFinite(n) ? n.toFixed(d) : "--");
+    const statusClass = (s) => s === "up" ? "up" : s === "down" ? "down" : "neutral";
+
+    async function loadDashboard() {
+      const [latestRes, historyRes] = await Promise.all([
+        fetch("../data/assets_latest.json?ts=" + Date.now(), { cache: "no-store" }),
+        fetch("../data/series_history.json?ts=" + Date.now(), { cache: "no-store" })
+      ]);
+      if (!latestRes.ok || !historyRes.ok) throw new Error("Falha ao carregar JSON de dados");
+
+      const latest = await latestRes.json();
+      const history = await historyRes.json();
+
+      document.getElementById("updated-at").textContent = latest.updated_at || "--";
+      const lines = (latest.aggregates || {}).line_values || {};
+      document.getElementById("line-blue").textContent = lines.blue ?? "--";
+      document.getElementById("line-red").textContent = lines.red ?? "--";
+      document.getElementById("line-green").textContent = lines.green ?? "--";
+      document.getElementById("line-gray").textContent = lines.gray ?? "--";
+
+      const body = document.getElementById("assets-body");
+      body.innerHTML = "";
+      for (const asset of latest.assets || []) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${asset.symbol ?? ""}</td>
+          <td>${asset.display_name ?? ""}</td>
+          <td>${asset.group ?? ""}</td>
+          <td>${fmt(asset.price, 4)}</td>
+          <td>${fmt(asset.change_pct, 3)}</td>
+          <td><span class="tag ${statusClass(asset.status)}">${asset.status ?? "neutral"}</span></td>
+          <td>${asset.source_used ?? "--"}</td>
+        `;
+        body.appendChild(tr);
+      }
+
+      const series = history.series || [];
+      const labels = series.map((x) => new Date(x.ts).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }));
+      const ds = (key, color) => ({
+        label: key,
+        data: series.map((x) => x[key]),
+        borderColor: color,
+        backgroundColor: color,
+        borderWidth: 2,
+        tension: 0.2,
+        pointRadius: 1
+      });
+
+      new Chart(document.getElementById("line-chart"), {
+        type: "line",
+        data: {
+          labels,
+          datasets: [
+            ds("green", "#22c55e"),
+            ds("red", "#ef4444"),
+            ds("blue", "#3b82f6"),
+            ds("gray", "#9ca3af")
+          ]
+        },
+        options: {
+          plugins: { legend: { labels: { color: "#e6edf3" } } },
+          scales: {
+            x: { ticks: { color: "#e6edf3" }, grid: { color: "#24304a" } },
+            y: { ticks: { color: "#e6edf3" }, grid: { color: "#24304a" } }
+          }
+        }
+      });
+    }
+
+    loadDashboard().catch((err) => {
+      console.error(err);
+      document.getElementById("updated-at").textContent = "erro ao carregar dados";
+    });
+  </script>
+</body>
+</html>

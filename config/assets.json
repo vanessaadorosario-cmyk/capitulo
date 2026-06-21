@@ -1,0 +1,326 @@
+{
+  "settings": {
+    "neutral_threshold_pct": 0.15,
+    "history_limit": 576,
+    "request_timeout_seconds": 12,
+    "request_retries": 2
+  },
+  "source_endpoints": {
+    "investing_portfolio_url": "https://br.investing.com/portfolio/?portfolioID=ZGRlMjJtNm9hPj00YjU4Mg%3D%3D",
+    "sina_iron_url": "https://finance.sina.com.cn/futures/quotes/I0.shtml",
+    "sina_hq_iron_api": "https://hq.sinajs.cn/list=hf_I0"
+  },
+  "assets": [
+    {
+      "symbol": "DX",
+      "display_name": "Índice Dólar Futuros",
+      "group": "safety",
+      "line_memberships": ["blue", "green"],
+      "preferred_sources": ["investing_portfolio", "yahoo_chart", "stooq"],
+      "source_symbols": { "yahoo_chart": "DX-Y.NYB", "stooq": "dx.f" },
+      "parsing_hints": { "investing_search": ["Índice Dólar Futuros", "DX"] }
+    },
+    {
+      "symbol": "VX",
+      "display_name": "S&P 500 VIX Futuros",
+      "group": "safety",
+      "line_memberships": ["blue", "green"],
+      "preferred_sources": ["investing_portfolio", "yahoo_chart", "stooq"],
+      "source_symbols": { "yahoo_chart": "^VIX", "stooq": "vix" },
+      "parsing_hints": { "investing_search": ["VIX", "VX"] },
+      "neutral_threshold_pct": 0.5
+    },
+    {
+      "symbol": "USD/MXN",
+      "display_name": "USD/MXN",
+      "group": "safety",
+      "line_memberships": ["blue"],
+      "preferred_sources": ["investing_portfolio", "yahoo_chart", "stooq"],
+      "source_symbols": { "yahoo_chart": "USDMXN=X", "stooq": "usdmxn" },
+      "parsing_hints": { "investing_search": ["USD/MXN"] }
+    },
+    {
+      "symbol": "USD/NOK",
+      "display_name": "USD/NOK",
+      "group": "safety",
+      "line_memberships": ["blue", "green"],
+      "preferred_sources": ["investing_portfolio", "yahoo_chart", "stooq"],
+      "source_symbols": { "yahoo_chart": "USDNOK=X", "stooq": "usdnok" },
+      "parsing_hints": { "investing_search": ["USD/NOK"] }
+    },
+    {
+      "symbol": "USD/NZD",
+      "display_name": "USD/NZD",
+      "group": "safety",
+      "line_memberships": ["blue", "green"],
+      "preferred_sources": ["investing_portfolio", "yahoo_chart", "stooq"],
+      "source_symbols": { "yahoo_chart": "USDNZD=X", "stooq": "usdnzd" },
+      "parsing_hints": { "investing_search": ["USD/NZD"] }
+    },
+    {
+      "symbol": "USD/AUD",
+      "display_name": "USD/AUD",
+      "group": "safety",
+      "line_memberships": ["blue", "green"],
+      "preferred_sources": ["investing_portfolio", "yahoo_chart", "stooq"],
+      "source_symbols": { "yahoo_chart": "USDAUD=X", "stooq": "usdaud" },
+      "parsing_hints": { "investing_search": ["USD/AUD"] }
+    },
+    {
+      "symbol": "USD/KRW",
+      "display_name": "USD/KRW",
+      "group": "safety",
+      "line_memberships": ["blue", "green"],
+      "preferred_sources": ["investing_portfolio", "yahoo_chart", "stooq"],
+      "source_symbols": { "yahoo_chart": "USDKRW=X", "stooq": "usdkrw" },
+      "parsing_hints": { "investing_search": ["USD/KRW"] }
+    },
+    {
+      "symbol": "USD/CNY",
+      "display_name": "USD/CNY",
+      "group": "safety",
+      "line_memberships": ["blue", "green"],
+      "preferred_sources": ["investing_portfolio", "yahoo_chart", "stooq"],
+      "source_symbols": { "yahoo_chart": "USDCNY=X", "stooq": "usdcny" },
+      "parsing_hints": { "investing_search": ["USD/CNY"] }
+    },
+    {
+      "symbol": "EUR/BRL",
+      "display_name": "EUR/BRL",
+      "group": "safety",
+      "line_memberships": ["blue", "green"],
+      "preferred_sources": ["investing_portfolio", "yahoo_chart", "stooq"],
+      "source_symbols": { "yahoo_chart": "EURBRL=X", "stooq": "eurbrl" },
+      "parsing_hints": { "investing_search": ["EUR/BRL"] }
+    },
+    {
+      "symbol": "FGP",
+      "display_name": "Posição dos Estrangeiros 10k+ (placeholder)",
+      "group": "safety",
+      "line_memberships": ["blue"],
+      "preferred_sources": ["manual_placeholder"],
+      "source_symbols": {},
+      "parsing_hints": { "notes": "Sem feed público estável; mantido como placeholder." }
+    },
+    {
+      "symbol": "VOL_D1",
+      "display_name": "Volume D-1 (placeholder)",
+      "group": "safety",
+      "line_memberships": ["blue"],
+      "preferred_sources": ["manual_placeholder"],
+      "source_symbols": {},
+      "parsing_hints": { "notes": "Sem feed público estável; mantido como placeholder." }
+    },
+    {
+      "symbol": "GC",
+      "display_name": "Ouro Futuros",
+      "group": "risk",
+      "line_memberships": ["red"],
+      "preferred_sources": ["investing_portfolio", "yahoo_chart", "stooq"],
+      "source_symbols": { "yahoo_chart": "GC=F", "stooq": "gc.f" },
+      "parsing_hints": { "investing_search": ["Ouro Futuros", "GC"] }
+    },
+    {
+      "symbol": "HG",
+      "display_name": "Cobre Futuros",
+      "group": "risk",
+      "line_memberships": ["red"],
+      "preferred_sources": ["investing_portfolio", "yahoo_chart", "stooq"],
+      "source_symbols": { "yahoo_chart": "HG=F", "stooq": "hg.f" },
+      "parsing_hints": { "investing_search": ["Cobre Futuros", "HG"] }
+    },
+    {
+      "symbol": "CL",
+      "display_name": "Petróleo WTI Futuros",
+      "group": "risk",
+      "line_memberships": ["red"],
+      "preferred_sources": ["investing_portfolio", "yahoo_chart", "stooq"],
+      "source_symbols": { "yahoo_chart": "CL=F", "stooq": "cl.f" },
+      "parsing_hints": { "investing_search": ["Petróleo WTI", "CL"] }
+    },
+    {
+      "symbol": ".OSEAX",
+      "display_name": "Oslo All Share",
+      "group": "risk",
+      "line_memberships": ["red"],
+      "preferred_sources": ["investing_portfolio", "yahoo_chart", "stooq"],
+      "source_symbols": { "yahoo_chart": "OSEAX.OL", "stooq": "oseax.ol" },
+      "parsing_hints": { "investing_search": ["Oslo All Share", ".OSEAX"] }
+    },
+    {
+      "symbol": "ZS",
+      "display_name": "Soja Chicago Futuros",
+      "group": "risk",
+      "line_memberships": ["red"],
+      "preferred_sources": ["investing_portfolio", "yahoo_chart", "stooq"],
+      "source_symbols": { "yahoo_chart": "ZS=F", "stooq": "zs.f" },
+      "parsing_hints": { "investing_search": ["Soja Chicago", "ZS"] }
+    },
+    {
+      "symbol": "YM",
+      "display_name": "Dow Jones Futuros",
+      "group": "risk",
+      "line_memberships": ["red"],
+      "preferred_sources": ["investing_portfolio", "yahoo_chart", "stooq"],
+      "source_symbols": { "yahoo_chart": "YM=F", "stooq": "ym.f" },
+      "parsing_hints": { "investing_search": ["Dow Jones Futuros", "YM"] }
+    },
+    {
+      "symbol": ".GDOW",
+      "display_name": "The Global Dow USD",
+      "group": "risk",
+      "line_memberships": ["red"],
+      "preferred_sources": ["investing_portfolio", "yahoo_chart", "stooq"],
+      "source_symbols": { "yahoo_chart": "^DJI", "stooq": "dji" },
+      "parsing_hints": { "investing_search": ["Global Dow", ".GDOW"] }
+    },
+    {
+      "symbol": "VALE.K",
+      "display_name": "Vale SA ADR",
+      "group": "risk",
+      "line_memberships": ["red", "green"],
+      "preferred_sources": ["investing_portfolio", "yahoo_chart", "stooq"],
+      "source_symbols": { "yahoo_chart": "VALE", "stooq": "vale.us" },
+      "parsing_hints": { "investing_search": ["Vale SA ADR", "VALE.K"] }
+    },
+    {
+      "symbol": "PBR",
+      "display_name": "Petrobras SA ADR",
+      "group": "risk",
+      "line_memberships": ["red", "green"],
+      "preferred_sources": ["investing_portfolio", "yahoo_chart", "stooq"],
+      "source_symbols": { "yahoo_chart": "PBR", "stooq": "pbr.us" },
+      "parsing_hints": { "investing_search": ["Petrobras", "PBR"] }
+    },
+    {
+      "symbol": "EWZ",
+      "display_name": "iShares MSCI Brazil ETF",
+      "group": "risk",
+      "line_memberships": ["red", "green"],
+      "preferred_sources": ["investing_portfolio", "yahoo_chart", "stooq"],
+      "source_symbols": { "yahoo_chart": "EWZ", "stooq": "ewz.us" },
+      "parsing_hints": { "investing_search": ["EWZ", "MSCI Brazil"] }
+    },
+    {
+      "symbol": "XLF",
+      "display_name": "Financial Select Sector SPDR",
+      "group": "risk",
+      "line_memberships": ["red", "green"],
+      "preferred_sources": ["investing_portfolio", "yahoo_chart", "stooq"],
+      "source_symbols": { "yahoo_chart": "XLF", "stooq": "xlf.us" },
+      "parsing_hints": { "investing_search": ["XLF", "Financial Select"] }
+    },
+    {
+      "symbol": "XLP",
+      "display_name": "Consumer Staples Select Sector SPDR",
+      "group": "risk",
+      "line_memberships": ["red", "green"],
+      "preferred_sources": ["investing_portfolio", "yahoo_chart", "stooq"],
+      "source_symbols": { "yahoo_chart": "XLP", "stooq": "xlp.us" },
+      "parsing_hints": { "investing_search": ["XLP", "Consumer Staples"] }
+    },
+    {
+      "symbol": "XLE",
+      "display_name": "Energy Select Sector SPDR",
+      "group": "risk",
+      "line_memberships": ["red", "green"],
+      "preferred_sources": ["investing_portfolio", "yahoo_chart", "stooq"],
+      "source_symbols": { "yahoo_chart": "XLE", "stooq": "xle.us" },
+      "parsing_hints": { "investing_search": ["XLE", "Energy Select"] }
+    },
+    {
+      "symbol": "XME",
+      "display_name": "SPDR S&P Metals and Mining ETF",
+      "group": "risk",
+      "line_memberships": ["red", "green"],
+      "preferred_sources": ["investing_portfolio", "yahoo_chart", "stooq"],
+      "source_symbols": { "yahoo_chart": "XME", "stooq": "xme.us" },
+      "parsing_hints": { "investing_search": ["XME", "Metals and Mining"] }
+    },
+    {
+      "symbol": "EEM",
+      "display_name": "iShares MSCI Emerging Markets ETF",
+      "group": "risk",
+      "line_memberships": ["red", "green"],
+      "preferred_sources": ["investing_portfolio", "yahoo_chart", "stooq"],
+      "source_symbols": { "yahoo_chart": "EEM", "stooq": "eem.us" },
+      "parsing_hints": { "investing_search": ["EEM", "Emerging Markets"] }
+    },
+    {
+      "symbol": "SOXX.O",
+      "display_name": "iShares Semiconductor ETF",
+      "group": "risk",
+      "line_memberships": ["red", "green"],
+      "preferred_sources": ["investing_portfolio", "yahoo_chart", "stooq"],
+      "source_symbols": { "yahoo_chart": "SOXX", "stooq": "soxx.us" },
+      "parsing_hints": { "investing_search": ["SOXX", "Semiconductor"] }
+    },
+    {
+      "symbol": ".BSESN",
+      "display_name": "BSE Sensex 30",
+      "group": "risk",
+      "line_memberships": ["red", "green"],
+      "preferred_sources": ["investing_portfolio", "yahoo_chart", "stooq"],
+      "source_symbols": { "yahoo_chart": "^BSESN", "stooq": "sensex" },
+      "parsing_hints": { "investing_search": ["BSE Sensex", ".BSESN"] }
+    },
+    {
+      "symbol": ".SSEC",
+      "display_name": "Shanghai Composite",
+      "group": "reference",
+      "line_memberships": ["green"],
+      "preferred_sources": ["investing_portfolio", "yahoo_chart", "stooq"],
+      "source_symbols": { "yahoo_chart": "000001.SS", "stooq": "shc" },
+      "parsing_hints": { "investing_search": ["Shanghai Composite", ".SSEC"] }
+    },
+    {
+      "symbol": ".SZI",
+      "display_name": "SZSE Component",
+      "group": "reference",
+      "line_memberships": ["green"],
+      "preferred_sources": ["investing_portfolio", "yahoo_chart", "stooq"],
+      "source_symbols": { "yahoo_chart": "399001.SZ", "stooq": "szse" },
+      "parsing_hints": { "investing_search": ["SZSE Component", ".SZI"] }
+    },
+    {
+      "symbol": "HSI_FUT",
+      "display_name": "Hang Seng Futuros",
+      "group": "reference",
+      "line_memberships": ["green"],
+      "preferred_sources": ["investing_portfolio", "yahoo_chart", "stooq"],
+      "source_symbols": { "yahoo_chart": "HSI=F", "stooq": "hsi" },
+      "parsing_hints": { "investing_search": ["Hang Seng Futuros", "HSI"] }
+    },
+    {
+      "symbol": "A50_FUT",
+      "display_name": "China A50 Futuros",
+      "group": "reference",
+      "line_memberships": ["green"],
+      "preferred_sources": ["investing_portfolio", "stooq", "yahoo_chart"],
+      "source_symbols": { "stooq": "cn50" },
+      "parsing_hints": { "investing_search": ["China A50 Futuros", "CHINA50"] }
+    },
+    {
+      "symbol": ".DJSH",
+      "display_name": "Dow Jones Shanghai",
+      "group": "reference",
+      "line_memberships": ["green"],
+      "preferred_sources": ["investing_portfolio", "stooq"],
+      "source_symbols": { "stooq": "djsh" },
+      "parsing_hints": { "investing_search": ["Dow Jones Shanghai", ".DJSH"] }
+    },
+    {
+      "symbol": "MINERIO_SINA",
+      "display_name": "Minério de Ferro (Sina I0)",
+      "group": "risk",
+      "line_memberships": ["red", "green"],
+      "preferred_sources": ["sina_hq", "investing_portfolio", "yahoo_chart", "stooq"],
+      "source_symbols": { "sina_hq": "hf_I0", "yahoo_chart": "TIO=F", "stooq": "tio.f" },
+      "parsing_hints": {
+        "sina_page": "https://finance.sina.com.cn/futures/quotes/I0.shtml",
+        "investing_search": ["MINÉRIO", "Minério de Ferro"]
+      },
+      "neutral_threshold_pct": 3.0
+    }
+  ]
+}
