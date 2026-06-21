@@ -19,32 +19,44 @@ const MARKET_HISTORY_MAX = 72;
 // Lista de ativos que você usa no checklist
 let ativos = [
   // ---- RISCO ----
+  { codigo: "GOLD",    nome: "Ouro Futuros",                            tipo: "risco",     limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
+  { codigo: "COPPER",  nome: "Cobre Futuros",                           tipo: "risco",     limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
+  { codigo: "CL",      nome: "Petróleo WTI Futuros",                    tipo: "risco",     limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
+  { codigo: "OSLO",    nome: "Oslo All Share",                          tipo: "risco",     limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
+  { codigo: "ZS",      nome: "Soja Chicago Futuros",                    tipo: "risco",     limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
+  { codigo: "YMH26",   nome: "Dow Jones Futuros",                       tipo: "risco",     limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
+  { codigo: "GDOW",    nome: "The Global Dow USD",                      tipo: "risco",     limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
   { codigo: "VALE.K",  nome: "Vale SA ADR",                             tipo: "risco",     limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
-  { codigo: "PBR",     nome: "Petrobras ADR",                           tipo: "risco",     limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
+  { codigo: "PBR",     nome: "Petrobras SA ADR",                        tipo: "risco",     limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
   { codigo: "EWZ",     nome: "iShares MSCI Brazil ETF",                 tipo: "risco",     limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
-  { codigo: "XLF",     nome: "Financial Select Sector SPDR",            tipo: "risco",     limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
-  { codigo: "XLP",     nome: "Consumer Staples Select Sector SPDR",     tipo: "risco",     limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
-  { codigo: "XLE",     nome: "Energy Select Sector SPDR",               tipo: "risco",     limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
-  { codigo: "XME",     nome: "SPDR S&P Metals & Mining",                tipo: "risco",     limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
-  { codigo: "EEM",     nome: "iShares MSCI Emerging Markets",           tipo: "risco",     limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
+  { codigo: "XLF",     nome: "State Street Financial Select Sector SPDR ETF", tipo: "risco", limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
+  { codigo: "XLP",     nome: "State Street Consumer Staples Select Sector SPDR ETF", tipo: "risco", limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
+  { codigo: "XLE",     nome: "State Street Energy Select Sector SPDR ETF", tipo: "risco", limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
+  { codigo: "XME",     nome: "State Street SPDR S&P Metals & Mining ETF", tipo: "risco", limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
+  { codigo: "EEM",     nome: "iShares MSCI Emerging Markets ETF",      tipo: "risco",     limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
   { codigo: "SOXX.O",  nome: "iShares Semiconductor ETF",               tipo: "risco",     limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
   { codigo: ".BSESN",  nome: "BSE Sensex 30",                           tipo: "risco",     limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
   { codigo: "CHINA",   nome: "Bolsas China",                            tipo: "risco",     limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
+  { codigo: "MINERIO_SINA", nome: "Minério de Ferro (Sina I0)",         tipo: "risco",     limiteAlta: LIMITE_MINERIO_ALTA, limiteQueda: LIMITE_MINERIO_QUEDA, variacao: 0 },
 
   // ---- SEGURANÇA ----
   { codigo: "DX",      nome: "Índice Dólar Futuros",                    tipo: "seguranca", limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
   { codigo: "VX",      nome: "S&P 500 VIX Futuros",                     tipo: "seguranca", limiteAlta: LIMITE_VX_ALTA,     limiteQueda: LIMITE_VX_QUEDA,     variacao: 0 },
-  { codigo: "USD/MXN", nome: "USD/MXN",                                 tipo: "seguranca", limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
-  { codigo: "USD/NOK", nome: "USD/NOK",                                 tipo: "seguranca", limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
-  { codigo: "USD/NZD", nome: "USD/NZD",                                 tipo: "seguranca", limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
-  { codigo: "USD/AUD", nome: "USD/AUD",                                 tipo: "seguranca", limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
-  { codigo: "USD/KRW", nome: "USD/KRW",                                 tipo: "seguranca", limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
-  { codigo: "USD/CNY", nome: "USD/CNY",                                 tipo: "seguranca", limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
-  { codigo: "EUR/BRL", nome: "EUR/BRL",                                 tipo: "seguranca", limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
-
-  // Minério (via Sina)
-  { codigo: "MINERIO_SINA", nome: "Minério de Ferro (Sina I0)",         tipo: "risco",     limiteAlta: LIMITE_MINERIO_ALTA, limiteQueda: LIMITE_MINERIO_QUEDA, variacao: 0 }
+  { codigo: "USD/MXN", nome: "USD/MXN - Dólar Americano Peso Mexicano", tipo: "seguranca", limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
+  { codigo: "USD/NOK", nome: "USD/NOK - Dólar Americano Coroa Norueguesa", tipo: "seguranca", limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
+  { codigo: "USD/NZD", nome: "USD/NZD - Dólar Americano Dólar Neozelandês", tipo: "seguranca", limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
+  { codigo: "USD/AUD", nome: "USD/AUD - Dólar Americano Dólar Australiano", tipo: "seguranca", limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
+  { codigo: "USD/KRW", nome: "USD/KRW - Dólar Americano Won Sul-Coreano", tipo: "seguranca", limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
+  { codigo: "USD/CNY", nome: "USD/CNY - Dólar Americano Yuan Chinês",   tipo: "seguranca", limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
+  { codigo: "EUR/BRL", nome: "EUR/BRL - Euro Real Brasileiro",          tipo: "seguranca", limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
+  { codigo: "FGP",     nome: "Posição dos Estrangeiros 10k+",           tipo: "seguranca", limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 },
+  { codigo: "VOL_D1",  nome: "Volume D-1",                              tipo: "seguranca", limiteAlta: LIMITE_PADRAO_ALTA, limiteQueda: LIMITE_PADRAO_QUEDA, variacao: 0 }
 ];
+
+ativos = ativos.filter((ativo, index, lista) => {
+  const codigoNormalizado = normalizarTexto(ativo.codigo);
+  return lista.findIndex(item => normalizarTexto(item.codigo) === codigoNormalizado) === index;
+});
 
 function normalizarTexto(valor) {
   return String(valor ?? "").trim().toLowerCase();
@@ -801,13 +813,5 @@ document.addEventListener("DOMContentLoaded", () => {
     carregarDadosDaPlanilha();
   } else {
     setSheetStatus("Sem planilha carregada. Usando modo manual.", "neutral");
-  }
-
-  if (!window.__marketRefreshTimer) {
-    window.__marketRefreshTimer = setInterval(() => {
-      if (getSheetUrl()) {
-        carregarDadosDaPlanilha();
-      }
-    }, SHEET_REFRESH_MS);
   }
 });
