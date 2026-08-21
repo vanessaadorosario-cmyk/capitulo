@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-21T22:01:35.446258+00:00",
+  "updated_at": "2026-08-21T22:35:10.940280+00:00",
   "source": "yfinance",
   "variacoes": {},
   "precos": {
@@ -30,6 +30,6 @@
     "USD/AUD": 1.3938,
     "USD/KRW": 1385.97998,
     "USD/CNY": 6.7118,
-    "EUR/BRL": 6.0006
+    "EUR/BRL": 6.0
   }
 }
