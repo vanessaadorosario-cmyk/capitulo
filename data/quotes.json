@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-22T08:00:10.303895+00:00",
+  "updated_at": "2026-11-22T16:10:52.686423+00:00",
   "source": "yfinance",
   "variacoes": {},
   "precos": {
@@ -24,12 +24,12 @@
     "MINERIO_SINA": 161.91,
     "DX": 103.84,
     "VX": 35.889999,
-    "USD/MXN": 19.090099,
+    "USD/MXN": 19.143,
     "USD/NOK": 9.7494,
     "USD/NZD": 1.828,
     "USD/AUD": 1.5108,
-    "USD/KRW": 1337.800049,
-    "USD/CNY": 6.6772,
+    "USD/KRW": 1346.130005,
+    "USD/CNY": 6.6623,
     "EUR/BRL": 6.501951
   }
 }
